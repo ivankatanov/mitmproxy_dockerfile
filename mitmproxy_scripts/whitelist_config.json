@@ -1,0 +1,5 @@
+{
+  "whitelist_enabled": true,
+  "log_all_requests": false,
+  "block_mode": true
+}
