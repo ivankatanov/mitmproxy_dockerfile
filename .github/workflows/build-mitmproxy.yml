@@ -3,7 +3,7 @@ name: Build & publish mitmproxy
 on:
   push:
     tags:
-      - 'mitmproxy_v*'    # Например, mitmproxy_v1.0.0
+      - 'mitmproxy_v*'
   workflow_dispatch:
 
 jobs:
@@ -16,7 +16,9 @@ jobs:
       - name: Extract version from tag
         id: extract_version
         run: |
-          echo "VERSION_TAG=${GITHUB_REF#refs/tags/mitmproxy_v}" >> $GITHUB_ENV
+          VERSION=${GITHUB_REF#refs/tags/mitmproxy_v}
+          echo "VERSION_TAG=$VERSION" >> $GITHUB_ENV
+          echo "Extracted version: $VERSION"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -33,5 +35,9 @@ jobs:
           context: ./mitmproxy_dockerfile/
           file: ./mitmproxy_dockerfile/Dockerfile
           push: true
+          platforms: linux/amd64,linux/arm64
           tags: |
             paul2tertianet/tn:mitmproxy_wise_automation_${{ env.VERSION_TAG }}
+            paul2tertianet/tn:mitmproxy_wise_automation_latest
+          cache-from: type=registry,ref=paul2tertianet/tn:mitmproxy_wise_automation_latest
+          cache-to: type=inline
